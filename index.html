@@ -113,8 +113,11 @@
         const response = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlInput)}`);
         const html = await response.text();
 
+        // Email standard
         const emails = [...new Set(html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/g))] || [];
-        const phones = [...new Set(html.match(/(\+?\d{1,4}[\s.-]?)?(\(?\d{2,4}\)?[\s.-]?)?[\d\s.-]{6,12}/g))] || [];
+
+        // Numeri di telefono: italiani e internazionali, formati comuni
+        const phones = [...new Set(html.match(/\+?\d{1,4}[\s.-]?\(?\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{3,4}/g))] || [];
 
         msg.innerText = "✅ Estrazione completata!";
         msg.className = "success";
