@@ -2,73 +2,71 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Trova Contatti da Sito</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Estrazione Email e Telefoni</title>
   <style>
     body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: 50px auto;
-      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: #f4f4f4;
     }
     input, button {
-      padding: 10px;
       width: 100%;
-      margin-top: 10px;
+      padding: 10px;
+      margin: 10px 0;
       font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
     }
-    button {
-      background-color: #007BFF;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #risultati {
-      margin-top: 20px;
-      white-space: pre-wrap;
-      font-size: 16px;
-      background: white;
+    ul {
+      background: #fff;
       padding: 15px;
       border-radius: 5px;
+    }
+    li {
+      margin: 5px 0;
     }
   </style>
 </head>
 <body>
-  <h2>Trova Email e Numero da un Sito Web</h2>
-  <input type="text" id="websiteUrl" placeholder="Inserisci un URL (es: https://esempio.it)">
-  <button onclick="trovaContatti()">Cerca Contatti</button>
-  <div id="risultati"></div>
+  <h1>Estrai Email e Numeri da un sito</h1>
+  <input type="text" id="url" placeholder="Inserisci un URL (con https://)">
+  <button onclick="estraiContatti()">Estrai Contatti</button>
+
+  <h2>Email trovate:</h2>
+  <ul id="emails"></ul>
+
+  <h2>Numeri di telefono trovati:</h2>
+  <ul id="phones"></ul>
 
   <script>
-    async function trovaContatti() {
-      const url = document.getElementById("websiteUrl").value.trim();
-      const risultati = document.getElementById("risultati");
-      risultati.textContent = "⏳ Cerco i contatti...";
-
-      if (!url.startsWith("http")) {
-        risultati.textContent = "❌ Inserisci un URL valido (con http o https)";
-        return;
-      }
+    async function estraiContatti() {
+      const url = document.getElementById("url").value;
+      document.getElementById("emails").innerHTML = "";
+      document.getElementById("phones").innerHTML = "";
 
       try {
-        const response = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent(url));
+        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
         const html = await response.text();
 
-        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}/g;
-        const phoneRegex = /(?:\\+39[\\s.-]?)?(\\(?\\d{2,4}\\)?[\\s.-]?)?\\d{3,4}[\\s.-]?\\d{4,5}/g;
+        const emails = [...new Set(html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/g))];
+        const phones = [...new Set(html.match(/(\+?\d{1,4}[\s.-]?)?(\(?\d{2,4}\)?[\s.-]?)?[\d\s.-]{6,12}/g))];
 
-        const emails = html.match(emailRegex) || [];
-        const phones = html.match(phoneRegex) || [];
+        if (emails.length > 0) {
+          document.getElementById("emails").innerHTML = emails.map(e => `<li>${e}</li>`).join('');
+        } else {
+          document.getElementById("emails").innerHTML = "<li>Nessuna email trovata</li>";
+        }
 
-        risultati.textContent = `📧 Email trovata: ${emails[0] || 'Nessuna'}\n📞 Telefono trovato: ${phones[0] || 'Nessuno'}`;
-      } catch (err) {
-        risultati.textContent = "❌ Errore nel recupero dei dati. Il sito potrebbe essere bloccato.";
+        if (phones.length > 0) {
+          document.getElementById("phones").innerHTML = phones.map(p => `<li>${p}</li>`).join('');
+        } else {
+          document.getElementById("phones").innerHTML = "<li>Nessun numero trovato</li>";
+        }
+
+      } catch (error) {
+        alert("Errore durante l'analisi. Il sito potrebbe bloccare le richieste.");
+        console.error(error);
       }
     }
   </script>
