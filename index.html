@@ -113,7 +113,8 @@
       msg.innerText = "⏳ Analisi in corso...";
 
       try {
-        const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(urlInput)}`);
+        const response = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlInput)}`);
+
         const html = await response.text();
 
         const emails = [...new Set(html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/g))];
