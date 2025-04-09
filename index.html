@@ -7,10 +7,9 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #f0f2f5, #e0e5ec);
+      background: #f4f4f4;
       margin: 0;
       padding: 30px;
-      color: #333;
     }
 
     .container {
@@ -24,7 +23,6 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 30px;
     }
 
     input[type="text"] {
@@ -33,11 +31,10 @@
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      box-sizing: border-box;
+      margin-bottom: 15px;
     }
 
     button {
-      margin-top: 15px;
       width: 100%;
       padding: 12px;
       font-size: 18px;
@@ -82,7 +79,7 @@
 <body>
   <div class="container">
     <h1>Estrai Email & Telefoni da un Sito</h1>
-    <input type="text" id="url" placeholder="Es: https://www.iana.org/domains/reserved" />
+    <input type="text" id="url" placeholder="Es: https://www.woodpecker.co/blog/email-outreach/email-format/" />
     <button onclick="estraiContatti()">Estrai Contatti</button>
     <div id="messaggio" class="error"></div>
 
@@ -114,11 +111,10 @@
 
       try {
         const response = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(urlInput)}`);
-
         const html = await response.text();
 
-        const emails = [...new Set(html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/g))];
-        const phones = [...new Set(html.match(/(\+?\d{1,4}[\s.-]?)?(\(?\d{2,4}\)?[\s.-]?)?[\d\s.-]{6,12}/g))];
+        const emails = [...new Set(html.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}/g))] || [];
+        const phones = [...new Set(html.match(/(\+?\d{1,4}[\s.-]?)?(\(?\d{2,4}\)?[\s.-]?)?[\d\s.-]{6,12}/g))] || [];
 
         msg.innerText = "✅ Estrazione completata!";
         msg.className = "success";
